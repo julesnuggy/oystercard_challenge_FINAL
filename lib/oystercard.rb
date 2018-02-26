@@ -1,11 +1,15 @@
+# require 'date'
+
 class OysterCard
-  attr_accessor :balance, :card_status
+  attr_accessor :card_status, :balance, :journey_history
+
   DEFAULT_BAL = 0
   MIN_FARE = 1
 
   def initialize(balance = DEFAULT_BAL)
     @balance = balance
     @card_status = false
+    @journey_history = []
   end
 
   def topup(amount)
@@ -13,9 +17,10 @@ class OysterCard
     @balance += amount
   end
 
-  def touch_in
+  def touch_in(station)
     raise 'Insufficient balance' if @balance < MIN_FARE
     @card_status = true
+    @journey_history << {from: station.name}
   end
 
   def touch_out

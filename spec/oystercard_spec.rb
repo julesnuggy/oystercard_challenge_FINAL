@@ -5,6 +5,9 @@ describe OysterCard do
   MIN_FARE = 1
   subject(:oystercard) { OysterCard.new(0) } # Default balance = 0
    # Creating a new OysterCard above bal = 0
+   before(:each) do
+     @fake_station1 = double(:fake_station1, name: 'fake station 1')
+   end
 
   it 'should have default balance of 0' do
     expect(oystercard.balance).to eq(0)
@@ -31,14 +34,14 @@ describe OysterCard do
 
     it 'should deduct fare from balance' do
       oystercard.topup(MIN_FARE)
-      oystercard.touch_in
+      oystercard.touch_in(@fake_station1)
       oystercard.touch_out
       expect(oystercard.balance).to eq(0)
     end
 
     it 'should deduct correct fare amount (using MIN_FARE for test)' do
       oystercard.topup(MAX_BALANCE)
-      oystercard.touch_in
+      oystercard.touch_in(@fake_station1)
       expect { oystercard.touch_out }.to change{ oystercard.balance }.by(-MIN_FARE)
     end
 
@@ -51,12 +54,15 @@ describe OysterCard do
     end
     it 'should set card_status to true' do
       oystercard.topup(MIN_FARE)
-      oystercard.touch_in
+      oystercard.touch_in(@fake_station1)
       expect(oystercard.card_status).to eq(true)
     end
     it 'should raise error if balance is less than min fare(1)' do
-      expect { oystercard.touch_in }.to raise_error 'Insufficient balance'
+      expect { oystercard.touch_in(@fake_station1) }.to raise_error 'Insufficient balance'
     end
+    # it 'should remember entry station when touch_in'
+    #
+    # end
   end
 
   describe '#touch_out' do
