@@ -10,7 +10,7 @@ describe OysterCard do
   end
 
   describe '#topup' do
-    it 'OysterCard should respond to topup' do
+    it 'OysterCard should respond to topup with amount as argument' do
       expect(oystercard).to respond_to(:topup).with(1).arguments #this tells how many arguments to expect
     end
 
@@ -19,7 +19,19 @@ describe OysterCard do
     end
 
     it 'Should raise_error when try balance > 90' do
-    expect{ oystercard.topup(MAX_BALANCE+1) }.to raise_error 'Balance cannot be more than £90'
+      expect{ oystercard.topup(MAX_BALANCE+1) }.to raise_error 'Balance cannot be more than £90'
     end
   end
+
+    describe '#deduct' do
+      it 'OysterCard should respond to deduct with amount as argument' do
+        expect(oystercard).to respond_to(:deduct).with(1).arguments #this tells how many arguments to expect
+      end
+
+      it 'should deduct fare from balance' do
+        oystercard.topup(20)
+        expect(oystercard.deduct(10)).to eq(10)
+      end
+
+    end
 end
