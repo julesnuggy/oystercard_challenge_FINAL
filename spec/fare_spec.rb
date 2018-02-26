@@ -1,0 +1,3 @@
+describe Fare do
+  
+end
