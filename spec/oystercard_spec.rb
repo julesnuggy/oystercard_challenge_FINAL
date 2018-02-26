@@ -1,6 +1,7 @@
 require 'oystercard'
 
 describe OysterCard do
+  MAX_BALANCE = 90
   subject(:oystercard) { OysterCard.new(0) } # Default balance = 0
    # Creating a new OysterCard above bal = 0
 
@@ -18,7 +19,7 @@ describe OysterCard do
     end
 
     it 'Should raise_error when try balance > 90' do
-    expect{ oystercard.topup(91) }.to raise_error 'Balance cannot be more than £90'
+    expect{ oystercard.topup(MAX_BALANCE+1) }.to raise_error 'Balance cannot be more than £90'
     end
   end
 end
