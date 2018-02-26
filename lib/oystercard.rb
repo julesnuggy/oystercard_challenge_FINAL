@@ -1,9 +1,10 @@
 class OysterCard
-  attr_accessor :balance
+  attr_accessor :balance, :card_status
   DEFAULT_BAL = 0
 
   def initialize(balance = DEFAULT_BAL)
     @balance = balance
+    @card_status = false
   end
 
   def topup(amount)
@@ -15,4 +16,15 @@ class OysterCard
     @balance -= fare
   end
 
+  def touch_in
+    @card_status = true
+  end
+
+  def touch_out
+    @card_status = false
+  end
+
+  def in_journey?
+    @card_status
+  end
 end
