@@ -17,5 +17,8 @@ describe OysterCard do
       expect(oystercard.topup(10)). to eq(10)
     end
 
+    it 'Should raise_error when try balance > 90' do
+    expect{ oystercard.topup(91) }.to raise_error 'Balance cannot be more than £90'
+    end
   end
 end
