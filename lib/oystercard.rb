@@ -5,4 +5,8 @@ class OysterCard
   def initialize(balance = DEFAULT_BAL)
     @balance = balance
   end
+
+  def topup(amount)
+    @balance += amount
+  end
 end

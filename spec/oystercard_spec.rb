@@ -7,4 +7,15 @@ describe OysterCard do
   it 'should have default balance of 0' do
     expect(oystercard.balance).to eq(0)
   end
+
+  describe '#topup' do
+    it 'OysterCard should respond to topup' do
+      expect(oystercard).to respond_to(:topup).with(1).arguments #this tells how many arguments to expect
+    end
+
+    it 'should add topup amount to balance' do
+      expect(oystercard.topup(10)). to eq(10)
+    end
+
+  end
 end
