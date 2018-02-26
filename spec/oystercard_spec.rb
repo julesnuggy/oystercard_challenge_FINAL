@@ -1,3 +1,3 @@
 describe  OyesterCard do
-  
+
 end
