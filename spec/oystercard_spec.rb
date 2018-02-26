@@ -24,15 +24,24 @@ describe OysterCard do
     end
   end
 
-  describe '#deduct' do
-    it 'OysterCard should respond to deduct with amount as argument' do
-      expect(oystercard).to respond_to(:deduct).with(1).arguments #this tells how many arguments to expect
-    end
+  describe '#deduct proxy tested using touch_in and touch_out' do
+    # it 'OysterCard should respond to deduct with amount as argument' do
+    #   expect(oystercard).to respond_to(:deduct).with(1).arguments #this tells how many arguments to expect
+    # end
 
     it 'should deduct fare from balance' do
       oystercard.topup(MIN_FARE)
-      expect(oystercard.deduct(MIN_FARE)).to eq(0)
+      oystercard.touch_in
+      oystercard.touch_out
+      expect(oystercard.balance).to eq(0)
     end
+
+    it 'should deduct correct fare amount (using MIN_FARE for test)' do
+      oystercard.topup(MAX_BALANCE)
+      oystercard.touch_in
+      expect { oystercard.touch_out }.to change{ oystercard.balance }.by(-MIN_FARE)
+    end
+
   end
 
 # # touch_in, touch_out and in_journey?
