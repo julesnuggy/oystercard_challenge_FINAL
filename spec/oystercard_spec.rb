@@ -2,6 +2,7 @@ require 'oystercard'
 
 describe OysterCard do
   MAX_BALANCE = 90
+  MIN_FARE = 1
   subject(:oystercard) { OysterCard.new(0) } # Default balance = 0
    # Creating a new OysterCard above bal = 0
 
@@ -29,8 +30,8 @@ describe OysterCard do
     end
 
     it 'should deduct fare from balance' do
-      oystercard.topup(20)
-      expect(oystercard.deduct(10)).to eq(10)
+      oystercard.topup(MIN_FARE)
+      expect(oystercard.deduct(MIN_FARE)).to eq(0)
     end
   end
 
@@ -40,8 +41,12 @@ describe OysterCard do
       expect(oystercard).to respond_to(:touch_in)
     end
     it 'should set card_status to true' do
+      oystercard.topup(MIN_FARE)
       oystercard.touch_in
       expect(oystercard.card_status).to eq(true)
+    end
+    it 'should raise error if balance is less than min fare(1)' do
+      expect { oystercard.touch_in }.to raise_error 'Insufficient balance'
     end
   end
 
