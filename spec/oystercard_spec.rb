@@ -3,12 +3,13 @@ require 'oystercard'
 describe OysterCard do
   MAX_BALANCE = 90
   MIN_FARE = 1
+  PENALTY = 6
   subject(:oystercard) { OysterCard.new(0) } # Default balance = 0
    # Creating a new OysterCard above bal = 0
-   before(:each) do
-     @barking = double(:barking, name: 'Barking')
-     @aldgate = double(:aldgate, name: 'Aldgate')
-   end
+  before(:each) do
+    @barking = double(:barking, name: 'Barking', zone: 4)
+    @aldgate = double(:aldgate, name: 'Aldgate', zone: 1)
+  end
 
   it 'should have default balance of 0' do
     expect(oystercard.balance).to eq(0)
@@ -40,10 +41,15 @@ describe OysterCard do
       expect(oystercard.balance).to eq(0)
     end
 
-    it 'should deduct correct fare amount (using MIN_FARE for test)' do
+    it 'should deduct correct fare (MIN_FARE) amount when touched in & touched out' do
       oystercard.topup(MAX_BALANCE)
       oystercard.touch_in(@barking)
       expect { oystercard.touch_out(@aldgate) }.to change{ oystercard.balance }.by(-MIN_FARE)
+    end
+
+    it 'should deduct PENALTY fare when not touched in before touched out ' do
+      oystercard.topup(MAX_BALANCE)
+      expect { oystercard.touch_out(@aldgate) }.to change{ oystercard.balance }.by(-PENALTY)
     end
 
   end
@@ -94,17 +100,25 @@ describe OysterCard do
       oystercard.topup(MIN_FARE)
       oystercard.touch_in(@barking)
       oystercard.touch_out(@aldgate)
-      expect(oystercard.journey_history).to eq([{from: @barking, to: @aldgate}])
+      expect(oystercard.journey_history).to eq([{ from: @barking, to: @aldgate }])
     end
 
   end
 
-  describe '#in_journey?' do
-    it 'shoud respond to in_journey?' do
-      expect(oystercard).to respond_to(:in_journey?)
-    end
-    it 'should return mid_journey' do
-      expect(oystercard.in_journey?).to eq(oystercard.mid_journey)
-    end
-  end
+########## tests redundant as methods turned private
+
+  # describe '#in_journey?' do
+  #   it 'shoud respond to in_journey?' do
+  #     expect(oystercard).to respond_to(:in_journey?)
+  #   end
+  #   it 'should return mid_journey' do
+  #     expect(oystercard.in_journey?).to eq(oystercard.mid_journey)
+  #   end
+  # end
+
+  # describe '#fare' do
+  #   it 'Should respond to fare' do
+  #     expect(oystercard).to respond_to(:fare)
+  #   end
+  # end
 end
