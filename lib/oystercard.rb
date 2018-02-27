@@ -1,14 +1,17 @@
 # require 'date'
+# require './lib/station'
 
 class OysterCard
-  attr_accessor :card_status, :balance, :journey_history
+  attr_accessor :mid_journey, :balance
+  attr_reader :entry_station, :exit_station, :journey_history
 
   DEFAULT_BAL = 0
   MIN_FARE = 1
 
   def initialize(balance = DEFAULT_BAL)
     @balance = balance
-    @card_status = false
+    @mid_journey = false
+    @entry_station = nil
     @journey_history = []
   end
 
@@ -19,17 +22,21 @@ class OysterCard
 
   def touch_in(station)
     raise 'Insufficient balance' if @balance < MIN_FARE
-    @card_status = true
-    @journey_history << {from: station.name}
+    @mid_journey = true
+    @entry_station = station
   end
 
-  def touch_out
+  def touch_out(station)
     deduct(MIN_FARE)
-    @card_status = false
+    @exit_station = station
+    @journey_history << {from: @entry_station, to: @exit_station}
+    @mid_journey = false
+    @entry_station = nil
+    @entry_station = nil
   end
 
   def in_journey?
-    @card_status
+    @mid_journey
   end
 
   private

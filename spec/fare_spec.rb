@@ -1,3 +1,0 @@
-describe Fare do
-  
-end

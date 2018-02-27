@@ -1,3 +1,0 @@
-class Fare
-
-end
