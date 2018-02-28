@@ -5,10 +5,10 @@ class OysterCard
   # default constants (defined in one line)
   MIN_BAL, MAX_BAL, MIN_FARE, PENALTY = 0, 90, 1, 6
 
-  def initialize(balance = MIN_BAL)
+  def initialize(balance = MIN_BAL, journey = Journey.new)
     @balance = balance
     @completed_journeys = []
-    @journey = Journey.new
+    @journey = journey
   end
 
   # topup method tops up the oystercard with amount given
@@ -22,6 +22,7 @@ class OysterCard
   # throws error if balance is less than MIN_FARE
   def touch_in(station)
     # When user forgets to touch out, charge them penalty fare
+    # HARDCODED, NEED TO FIX
     if @journey.in_journey?
       deduct(PENALTY)
       @completed_journeys << @journey.stop.merge(fare: PENALTY)
