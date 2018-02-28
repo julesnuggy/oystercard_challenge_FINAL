@@ -1,9 +1,7 @@
 require 'oystercard'
 
 describe OysterCard do
-  MAX_BALANCE = 90
-  MIN_FARE = 1
-  PENALTY = 6
+  MAX_BALANCE, MIN_FARE, PENALTY = 90, 1, 6
   subject(:oystercard) { OysterCard.new(0) } # Default balance = 0
    # Creating a new OysterCard above bal = 0
   before(:each) do
@@ -59,19 +57,9 @@ describe OysterCard do
     it 'shoud respond to touch_in' do
       expect(oystercard).to respond_to(:touch_in)
     end
-    it 'should set mid_journey to true' do
-      oystercard.topup(MIN_FARE)
-      oystercard.touch_in(@barking)
-      expect(oystercard.mid_journey).to eq(true)
-    end
 
     it 'should raise error if balance is less than min fare(1)' do
       expect { oystercard.touch_in(@barking) }.to raise_error 'Insufficient balance'
-    end
-    it 'should set @entry_station to @barking' do
-      oystercard.topup(MIN_FARE)
-      oystercard.touch_in(@barking)
-      expect(oystercard.entry_station).to eq(@barking)
     end
 
   end
@@ -80,27 +68,16 @@ describe OysterCard do
     it 'shoud respond to touch_out' do
       expect(oystercard).to respond_to(:touch_out).with(1).arguments
     end
-    it 'should set mid_journey to false' do
-      oystercard.touch_out(@aldgate)
-      expect(oystercard.mid_journey).to eq(false)
+
+    it 'completed_journeys should be empty in the start' do
+      expect(oystercard.completed_journeys).to eq([])
     end
 
-    it 'should set @entry_station to nil' do
+    it 'should push history hash to completed_journeys' do
       oystercard.topup(MIN_FARE)
       oystercard.touch_in(@barking)
       oystercard.touch_out(@aldgate)
-      expect(oystercard.entry_station).to eq(nil)
-    end
-
-    it 'journey_history should be empty in the start' do
-      expect(oystercard.journey_history).to eq([])
-    end
-
-    it 'should push history hash to journey_history' do
-      oystercard.topup(MIN_FARE)
-      oystercard.touch_in(@barking)
-      oystercard.touch_out(@aldgate)
-      expect(oystercard.journey_history).to eq([{ from: @barking, to: @aldgate }])
+      expect(oystercard.completed_journeys).to eq([{ from: @barking, to: @aldgate , fare: MIN_FARE}])
     end
 
   end

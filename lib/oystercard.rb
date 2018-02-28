@@ -1,22 +1,20 @@
 # require 'date'
 # require './lib/station'
+require_relative 'journey'
 
 class OysterCard
-  attr_reader :entry_station, :exit_station, :journey_history, :mid_journey, :balance
+  attr_reader :completed_journeys, :balance
+  # attr_reader  :entry_station, :exit_station, :mid_journey,
 
   # default constants (defined in one line)
   MIN_BAL, MAX_BAL, MIN_FARE, PENALTY = 0, 90, 1, 6
 
-  # MIN_BAL = 0
-  # MAX_BAL = 90
-  # MIN_FARE = 1
-  # PENALTY = 6
-
   def initialize(balance = MIN_BAL)
     @balance = balance
-    @mid_journey = false
-    @entry_station = @exit_station = nil
-    @journey_history = []
+    # @mid_journey = false
+    # @entry_station = @exit_station = nil
+    @completed_journeys = []
+    @journey = Journey.new
   end
 
   # topup method tops up the oystercard with amount given
@@ -29,30 +27,36 @@ class OysterCard
   # touch_in method take station object in and starts a journey
   # throws error if balance is less than MIN_FARE
   def touch_in(station)
+    # When user forgets to touch out, charge them penalty fare
+    if @journey.in_journey?
+      deduct(PENALTY)
+      @completed_journeys << @journey.stop.merge(fare: PENALTY)
+    end
+
     raise 'Insufficient balance' if @balance < MIN_FARE
-    @mid_journey = true
-    @entry_station = station
+    @journey.start(station)
   end
 
   # touch_out takes station object as an argument and saves current journey to
-  # journey_history. Also resets current journey status
+  # completed_journeys. Also resets current journey status
   def touch_out(station)
-    deduct(fare)
-    @exit_station = station
-    @journey_history << { from: @entry_station, to: @exit_station }
+    deduct(fare())
+    correct_fare = fare
+    # @exit_station = station
+    @completed_journeys << @journey.stop(station).merge(fare: correct_fare)
     # reset all journey related stuff to default as it's completed and stored
-    @mid_journey = false
-    @entry_station = @exit_station = nil
+    # @mid_journey = false
+    # @entry_station = @exit_station = nil
   end
 
   private
-
-  def in_journey?
-    @mid_journey
-  end
+  #
+  # def in_journey?
+  #   @mid_journey
+  # end
 
   def fare
-    in_journey? ? MIN_FARE : PENALTY
+    @journey.in_journey? ? MIN_FARE : PENALTY
   end
 
   def deduct(correct_fare)
