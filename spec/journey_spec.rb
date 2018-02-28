@@ -8,9 +8,9 @@ describe Journey do
 
   describe '#start' do
 
-    it 'should set mid_journey to true' do
-      journey.start(barking)
-      expect(journey.mid_journey).to eq(true)
+    it 'should set in_journey? to return true' do
+      journey.start('barking')
+      expect(journey.in_journey?).to eq(true)
     end
 
     it 'should set entry_station to barking' do
@@ -21,14 +21,19 @@ describe Journey do
   end
 
   describe '#stop' do
-    it 'should set in_journey to false' do
+    it 'should set in_journey? to return false' do
       journey.stop(aldgate)
       expect(journey.in_journey?).to eq(false)
     end
 
+    it 'should return a journey log for one journey' do
+      journey.start(barking)
+      expect(journey.stop(aldgate)).to eq({ from: barking, to: aldgate })
+    end
+
     it 'should set entry_station to nil' do
-      journey.start(@barking)
-      journey.stop(@aldgate)
+      journey.start(barking)
+      journey.stop(aldgate)
       expect(journey.entry_station).to eq(nil)
     end
   end

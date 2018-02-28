@@ -1,18 +1,12 @@
-# require 'date'
-# require './lib/station'
-require_relative 'journey'
-
+#require_relative 'journey'
 class OysterCard
   attr_reader :completed_journeys, :balance
-  # attr_reader  :entry_station, :exit_station, :mid_journey,
 
   # default constants (defined in one line)
   MIN_BAL, MAX_BAL, MIN_FARE, PENALTY = 0, 90, 1, 6
 
   def initialize(balance = MIN_BAL)
     @balance = balance
-    # @mid_journey = false
-    # @entry_station = @exit_station = nil
     @completed_journeys = []
     @journey = Journey.new
   end
@@ -44,17 +38,10 @@ class OysterCard
     correct_fare = fare
     # @exit_station = station
     @completed_journeys << @journey.stop(station).merge(fare: correct_fare)
-    # reset all journey related stuff to default as it's completed and stored
-    # @mid_journey = false
-    # @entry_station = @exit_station = nil
+
   end
 
   private
-  #
-  # def in_journey?
-  #   @mid_journey
-  # end
-
   def fare
     @journey.in_journey? ? MIN_FARE : PENALTY
   end

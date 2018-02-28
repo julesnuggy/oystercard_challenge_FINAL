@@ -4,10 +4,13 @@ describe OysterCard do
   MAX_BALANCE, MIN_FARE, PENALTY = 90, 1, 6
   subject(:oystercard) { OysterCard.new(0) } # Default balance = 0
    # Creating a new OysterCard above bal = 0
-  before(:each) do
-    @barking = double(:barking, name: 'Barking', zone: 4)
-    @aldgate = double(:aldgate, name: 'Aldgate', zone: 1)
-  end
+   let(:barking) { double :barking, name: 'Barking', zone: 4 }
+   let(:aldgate) { double :aldgate, name: 'Aldgate', zone: 1 }
+
+# before(:each) do
+#     @barking = double(:barking, name: 'Barking', zone: 4)
+#     @aldgate = double(:aldgate, name: 'Aldgate', zone: 1)
+#   end
 
   it 'should have default balance of 0' do
     expect(oystercard.balance).to eq(0)
@@ -34,20 +37,20 @@ describe OysterCard do
 
     it 'should deduct fare from balance' do
       oystercard.topup(MIN_FARE)
-      oystercard.touch_in(@barking)
-      oystercard.touch_out(@aldgate)
+      oystercard.touch_in(barking)
+      oystercard.touch_out(aldgate)
       expect(oystercard.balance).to eq(0)
     end
 
     it 'should deduct correct fare (MIN_FARE) amount when touched in & touched out' do
       oystercard.topup(MAX_BALANCE)
-      oystercard.touch_in(@barking)
-      expect { oystercard.touch_out(@aldgate) }.to change{ oystercard.balance }.by(-MIN_FARE)
+      oystercard.touch_in(barking)
+      expect { oystercard.touch_out(aldgate) }.to change{ oystercard.balance }.by(-MIN_FARE)
     end
 
     it 'should deduct PENALTY fare when not touched in before touched out ' do
       oystercard.topup(MAX_BALANCE)
-      expect { oystercard.touch_out(@aldgate) }.to change{ oystercard.balance }.by(-PENALTY)
+      expect { oystercard.touch_out(aldgate) }.to change{ oystercard.balance }.by(-PENALTY)
     end
 
   end
@@ -59,7 +62,7 @@ describe OysterCard do
     end
 
     it 'should raise error if balance is less than min fare(1)' do
-      expect { oystercard.touch_in(@barking) }.to raise_error 'Insufficient balance'
+      expect { oystercard.touch_in(barking) }.to raise_error 'Insufficient balance'
     end
 
   end
@@ -75,9 +78,15 @@ describe OysterCard do
 
     it 'should push history hash to completed_journeys' do
       oystercard.topup(MIN_FARE)
-      oystercard.touch_in(@barking)
-      oystercard.touch_out(@aldgate)
-      expect(oystercard.completed_journeys).to eq([{ from: @barking, to: @aldgate , fare: MIN_FARE}])
+      oystercard.touch_in(barking)
+      oystercard.touch_out(aldgate)
+      expect(oystercard.completed_journeys).to eq([{ from: barking, to: aldgate, fare: MIN_FARE}])
+    end
+
+    it 'should deduct PENALTY fare when touch in twice ' do
+      oystercard.topup(MAX_BALANCE)
+
+      expect { oystercard.touch_out(aldgate) }.to change{ oystercard.balance }.by(-PENALTY)
     end
 
   end
