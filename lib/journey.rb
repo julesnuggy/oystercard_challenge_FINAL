@@ -2,39 +2,43 @@
 # This takes care of all journey related things and should return journey info
 # when referred to
 class Journey
-  attr_reader :entry_station, :exit_station
+  attr_reader :correct_fare, :this_journey
 
-  def initialize
-    @mid_journey = false
-    @entry_station = @exit_station = nil
+  MIN_FARE, PENALTY = 1, 6
+
+  def initialize(entry_station = nil)
+    # @entry_station = entry_station
+    # @exit_station = nil
   end
 
-# start journey methods
-  def start(station = nil)
-    @mid_journey = true
-    @entry_station = station
+def start_journey
+  if completed?
+    deduct(PENALTY)
+    @completed_journeys << @journey.stop.merge(fare: PENALTY)
   end
 
-  def stop(station = nil)
-    @exit_station = station
-    log_journey
-    # reset all journey related stuff to default as it's completed and stored
-    reset_journey
-    return @journey
-  end
 
-  def in_journey?
-    @mid_journey
-  end
+  @entry_station = entry_station
+  @exit_station = nil
+end
 
+def finish_journey(station)
+  @exit_station = station
+  fare
+end
+
+def process_penalty
+
+end
   private
-  def reset_journey
-    @mid_journey = false
-    @entry_station = @exit_station = nil
+  def fare
+    @correct_fare = completed? ? MIN_FARE : PENALTY
   end
 
-  def log_journey
-    @journey = { from: @entry_station, to: exit_station }
+  def completed?
+    !(@entry_station.nil? || @exit_station.nil?)
   end
+
+
 
 end
