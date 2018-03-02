@@ -56,7 +56,7 @@ describe Oystercard do
 
     it 'should charge the penalty fare when #touch_in for incomplete journeys' do
       allow(jlog_incomp).to receive(:start)
-      allow(jlog_incomp).to receive(:calc_penalty) {6}
+      allow(jlog_incomp).to receive(:calc_penalty) { 6 }
       expect { oystercard_incomp.touch_in(waterloo) }.to change {oystercard_incomp.balance}.by(-journey_incomp.fare)
     end
 

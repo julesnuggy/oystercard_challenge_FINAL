@@ -1,7 +1,7 @@
 require_relative 'journey'
 
 class JourneyLog
-  attr_reader :entry_station, :exit_station, :in_journey, :fare
+  attr_reader :entry_station, :exit_station, :in_journey, :fare, :history
 
   def initialize
     @journey_class = Journey
@@ -12,7 +12,7 @@ class JourneyLog
   end
 
   def calc_penalty
-    @fare = @journey.calc_ fare
+    @fare = @journey.calc_fare
     log_journey
     @fare
   end
@@ -29,7 +29,6 @@ class JourneyLog
     log_journey
     reset_journey
     @fare
-
   end
 
 private

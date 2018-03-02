@@ -14,14 +14,20 @@ class Oystercard
   end
 
   def touch_in(station)
+    if @journey_log.in_journey
+      deduct(@journey_log.calc_penalty)
+    end
     raise "Not enough credit in balance" if @balance < MIN_FARE
-    deduct(@journey_log.calc_penalty) if @journey_log.in_journey
     @journey_log.start(station)
   end
 
   def touch_out(station)
     fare = @journey_log.finish(station)
     deduct(fare)
+  end
+
+  def show_history
+    puts @journey_log.history
   end
 
   private
