@@ -43,8 +43,4 @@ private
     @entry_station = @exit_station = nil
   end
 
-  def in_journey?
-    @in_journey
-  end
-
 end
