@@ -10,24 +10,25 @@ s3 = Station.new(3,3)
 s4 = Station.new(4,4)
 s5 = Station.new(5,5)
 
-oc.topup(10)
+oc.top_up(10)
 
-p 'touch in s1'
- oc.touch_in(s1)
-p 'touch out s2'
- oc.touch_out(s2)
-p "balance: #{oc.balance}"
-p ''
-p 'touch in s3'
- oc.touch_in(s3)
-p 'no touch out'
+puts 'touch in s1'
+p oc.touch_in(s1)
+puts 'touch out s2'
+p oc.touch_out(s2)
+puts "balance: #{oc.balance} \n"
 
-p 'touch in s4 (no touch out from before)'
- oc.touch_in(s4)
-p "balance: #{oc.balance}"
-p ''
-p 'touch out s5'
- oc.touch_out(s5)
-p "balance: #{oc.balance}"
+puts 'touch in s3'
+p oc.touch_in(s3)
+puts "no touch out"
+puts "balance: #{oc.balance} \n"
+
+puts 'touch in s4'
+p oc.touch_in(s4)
+puts "balance: #{oc.balance} \n"
+
+puts 'touch out s5'
+p oc.touch_out(s5)
+puts "balance: #{oc.balance} \n"
 p ''
 p oc

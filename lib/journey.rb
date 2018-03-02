@@ -2,26 +2,26 @@
 # This takes care of all journey related things and should return journey info
 # when referred to
 class Journey
-  attr_reader :correct_fare, :completed
+  attr_reader :fare, :completed
 
   MIN_FARE, PENALTY = 1, 6
 
-  def initialize(entry_station = nil)
-    @entry_station = entry_station
+  def initialize(station = nil)
+    @entry_station = station
     @completed = false
   end
 
-  def finish_journey(station)
+  def finish_journey(station = nil)
     @exit_station = station
     @completed = true
-    fare
+    calc_fare
   end
 
-  private
-
-  def fare
-    @correct_fare = completed? ? MIN_FARE : PENALTY
+  def calc_fare
+    @fare = completed? ? MIN_FARE : PENALTY
   end
+
+private
 
   def completed?
     @completed
