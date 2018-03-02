@@ -23,7 +23,7 @@ class JourneyLog
     @in_journey = true
   end
 
-  def stop(station = nil)
+  def finish(station = nil)
     @exit_station = station
     @fare = @journey.finish_journey(@exit_station)
     log_journey

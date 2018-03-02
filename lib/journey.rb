@@ -2,7 +2,7 @@
 # This takes care of all journey related things and should return journey info
 # when referred to
 class Journey
-  attr_reader :fare, :completed
+  attr_reader :fare, :completed, :entry_station, :exit_station
 
   MIN_FARE, PENALTY = 1, 6
 

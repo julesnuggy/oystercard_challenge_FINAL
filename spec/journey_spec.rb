@@ -1,40 +1,49 @@
 require 'journey'
 
 describe Journey do
-  subject(:journey) { Journey.new() }
-  let(:oystercard) { double :oystercard, topup: nil, touch_in: nil }
-  let(:barking) { double :barking, name: 'Barking', zone: 4 }
-  let(:aldgate) { double :aldgate, name: 'Aldgate', zone: 1 }
+  subject(:journey) { described_class.new(waterloo) }
+  let(:waterloo) { double :waterloo, name: :Waterloo, zone: 1 }
+  let(:paddington) { double :paddington, name: :Paddington, zone: 1 }
+
+  before do
+    journey
+  end
 
   describe '#start' do
 
-    it 'should set in_journey? to return true' do
-      journey.start('barking')
-      expect(journey.in_journey?).to eq(true)
+    it 'should set entry_station to waterloo' do
+      expect(journey.entry_station).to eq waterloo
     end
 
-    it 'should set entry_station to barking' do
-      #   # oystercard.topup(MIN_FARE)
-      journey.start(barking)
-      expect(journey.entry_station).to eq(barking)
+    it 'should set @completed to return false' do
+      expect(journey.completed).to eq false
     end
+
   end
 
   describe '#stop' do
-    it 'should set in_journey? to return false' do
-      journey.stop(aldgate)
-      expect(journey.in_journey?).to eq(false)
+
+    it 'should set exit station to paddington' do
+      journey.finish_journey(paddington)
+      expect(journey.exit_station).to eq paddington
     end
 
-    it 'should return a journey log for one journey' do
-      journey.start(barking)
-      expect(journey.stop(aldgate)).to eq({ from: barking, to: aldgate })
-    end
-
-    it 'should set entry_station to nil' do
-      journey.start(barking)
-      journey.stop(aldgate)
-      expect(journey.entry_station).to eq(nil)
+    it 'should set @completed to return true' do
+      journey.finish_journey(paddington)
+      expect(journey.completed).to eq true
     end
   end
+
+  describe '#calc_fare' do
+
+    it 'should return the minimum fare when journey completed' do
+      journey.finish_journey(paddington)
+      expect(journey.calc_fare).to eq described_class::MIN_FARE
+    end
+
+    it 'should return the penalty fare when journey not completed' do
+      expect(journey.calc_fare).to eq described_class::PENALTY
+    end
+  end
+
 end

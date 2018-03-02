@@ -1,110 +1,65 @@
 require 'oystercard'
 
-describe OysterCard do
-  MAX_BALANCE, MIN_FARE, PENALTY = 90, 1, 6
-  subject(:oystercard) { OysterCard.new(0) } # Default balance = 0
-   # Creating a new OysterCard above bal = 0
-  let(:barking) { double :barking, name: 'Barking', zone: 4 }
-  let(:aldgate) { double :aldgate, name: 'Aldgate', zone: 1 }
+describe Oystercard do
 
-# before(:each) do
-#     @barking = double(:barking, name: 'Barking', zone: 4)
-#     @aldgate = double(:aldgate, name: 'Aldgate', zone: 1)
-#   end
+  subject(:oystercard) { described_class.new(jlog_cls_comp) }
+  subject(:oystercard_min) { described_class.new(jlog_cls_comp) }
+  subject(:oystercard_empty) { described_class.new(jlog_cls_comp) }
+  subject(:oystercard_incomp) { described_class.new(jlog_cls_incomp) }
 
-  it 'should have default balance of 0' do
-    expect(oystercard.balance).to eq(0)
+  let(:jlog_cls_comp) { double :jlog_cls_comp, new: jlog_comp }
+  let(:jlog_comp) { double :jlog_comp, in_journey: false }
+  let(:journey_comp) { double :journey, fare: 1, completed: true }
+
+  let(:jlog_cls_incomp) { double :jlog_cls_comp, new: jlog_incomp }
+  let(:jlog_incomp) { double :jlog_comp, in_journey: true }
+  let(:journey_incomp) { double :journey, fare: 6, completed: false }
+
+  let(:waterloo) { double(:waterloo, name: :Waterloo, zone: 1) }
+  let(:paddington) { double(:paddington, name: :Paddington, zone: 1) }
+
+  before do
+    oystercard.top_up(10)
+    oystercard_incomp.top_up(10)
+    oystercard_min.top_up(1)
+    allow(jlog_comp).to receive(:start)
+    allow(jlog_comp).to receive(:finish) { 1 } #Return MIN_FARE for complete journey
   end
 
-  describe '#topup' do
-    it 'OysterCard should respond to topup with amount as argument' do
-      expect(oystercard).to respond_to(:topup).with(1).arguments
+  describe "check balance and enforce limits" do
+
+    it 'should have a balance of 0 when initialized' do
+      expect(oystercard_empty.balance).to eq 0
     end
 
-    it 'should add topup amount to balance' do
-      expect(oystercard.topup(10)). to eq(10)
+    it 'should respond to #top_up by adding money to the balance' do
+      expect { oystercard.top_up(10) }.to change {oystercard.balance}.by(10)
     end
 
-    it 'Should raise_error when try balance > 90' do
-      expect { oystercard.topup(MAX_BALANCE + 1) }.to raise_error 'Balance cannot be more than £90'
-    end
-  end
-
-  describe '#deduct proxy tested using touch_in and touch_out' do
-    # it 'OysterCard should respond to deduct with amount as argument' do
-    #   expect(oystercard).to respond_to(:deduct).with(1).arguments
-    # end
-
-    it 'should deduct fare from balance' do
-      oystercard.topup(MIN_FARE)
-      oystercard.touch_in(barking)
-      oystercard.touch_out(aldgate)
-      expect(oystercard.balance).to eq(0)
+    it 'should raise an error when #top_up will cause balance to exceed the limit' do
+      expect { oystercard.top_up(100) }.to raise_error("Your balance cannot be more than £#{Oystercard::MAX_BAL}")
     end
 
-    it 'should deduct correct fare (MIN_FARE) when touched in & touched out' do
-      oystercard.topup(MAX_BALANCE)
-      oystercard.touch_in(barking)
-      expect { oystercard.touch_out(aldgate) }.to change{ oystercard.balance }.by(-MIN_FARE)
+    it 'should raise an error when you try to #touch_in with less than the minimum fare on balance' do
+      expect { oystercard_empty.touch_in(waterloo) }.to raise_error("Not enough credit in balance")
     end
 
-    it 'should deduct PENALTY fare when not touched in before touched out ' do
-      oystercard.topup(MAX_BALANCE)
-      expect { oystercard.touch_out(aldgate) }.to change{ oystercard.balance }.by(-PENALTY)
+    it 'should NOT raise an error when balance equals minimum fare' do
+      expect { oystercard_min.touch_in(waterloo) }.not_to raise_error()
     end
 
-  end
+  describe 'amends balances appropiately when touching in/out'
 
-# # touch_in, touch_out and in_journey?
-  describe '#touch_in' do
-    it 'shoud respond to touch_in' do
-      expect(oystercard).to respond_to(:touch_in)
+    it 'should charge the minimum fare when #touch_out of a complete journey' do
+      expect { oystercard.touch_out(waterloo) }.to change { oystercard.balance }.by(-journey_comp.fare)
     end
 
-    it 'should raise error if balance is less than min fare(1)' do
-      expect { oystercard.touch_in(barking) }.to raise_error 'Insufficient balance'
+    it 'should charge the penalty fare when #touch_in for incomplete journeys' do
+      allow(jlog_incomp).to receive(:start)
+      allow(jlog_incomp).to receive(:calc_penalty) {6}
+      expect { oystercard_incomp.touch_in(waterloo) }.to change {oystercard_incomp.balance}.by(-journey_incomp.fare)
     end
 
   end
 
-  describe '#touch_out' do
-    it 'shoud respond to touch_out' do
-      expect(oystercard).to respond_to(:touch_out).with(1).arguments
-    end
-
-    it 'completed_journeys should be empty in the start' do
-      expect(oystercard.completed_journeys).to eq([])
-    end
-
-    it 'should push history hash to completed_journeys' do
-      oystercard.topup(MIN_FARE)
-      oystercard.touch_in(barking)
-      oystercard.touch_out(aldgate)
-      expect(oystercard.completed_journeys).to eq([{ from: barking, to: aldgate, fare: MIN_FARE}])
-    end
-
-    it 'should deduct PENALTY fare when touch in twice ' do
-      oystercard.topup(MAX_BALANCE)
-
-      expect { oystercard.touch_out(aldgate) }.to change{ oystercard.balance }.by(-PENALTY)
-    end
-
-  end
-
-########## tests redundant as methods turned private
-
-  # describe '#in_journey?' do
-  #   it 'shoud respond to in_journey?' do
-  #     expect(oystercard).to respond_to(:in_journey?)
-  #   end
-  #   it 'should return mid_journey' do
-  #     expect(oystercard.in_journey?).to eq(oystercard.mid_journey)
-  #   end
-  # end
-
-  # describe '#fare' do
-  #   it 'Should respond to fare' do
-  #     expect(oystercard).to respond_to(:fare)
-  #   end
-  # end
 end
