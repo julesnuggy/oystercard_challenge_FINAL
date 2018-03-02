@@ -12,7 +12,7 @@ class JourneyLog
   end
 
   def calc_penalty
-    @fare = @journey.calc_fare
+    @fare = @journey.calc_ fare
     log_journey
     @fare
   end
