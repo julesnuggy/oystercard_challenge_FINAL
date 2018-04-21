@@ -5,7 +5,7 @@
 
 This is the final repo for the Oystercard Challenge. Previous repos for this same challenge were also created but this is the final working version:
 * https://github.com/julesnuggy/Oystercard-challenge
-* https://github.com/julesnuggy/oystercard_challenge_2/graphs/contributors
+* https://github.com/julesnuggy/oystercard_challenge_2
 
 ### Descriptions
 This is a program which simulates the Oystercard system to a very basic level. There are 4 classes of objects: Oystercard, JourneyLog, Journey and Station. The first 3 are very closely linked to each other while Station is more removed, though still necessary for the program to run.
